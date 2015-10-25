@@ -1,0 +1,13 @@
+<h1><%= @product.name %></h1>
+
+<p>
+  <b>Price:</b>
+  <%= number_to_currency @product.price %>
+</p>
+
+<p>
+  <b>Category:</b>
+  <%= @product.category_name %>
+</p>
+
+<p><%= link_to "Back to Products", products_path %></p>
