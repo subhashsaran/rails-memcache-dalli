@@ -7,28 +7,32 @@ Installing Memcached and Dalli
 
 We have a Rails application with a cache store that we’ll switch to use Memcached and Dalli. The first step is to install Memcached, though if you’re running OS X it comes pre-installed. The easiest way to upgrade to a newer version is through Homebrew and we’ll do that now.
 
+```
+
 sudo apt-get update
 
 sudo apt-get install memcached
 
+```
+
 Now that we have Memcached running we’ll set it up as the cache store for our application. We’ll add the dalli gem to the gemfile then run bundle to install it.
 
+```
 gem 'dalli'
+```
 
 Next we’ll modify the development config file and temporarily enable caching so that we can try it out. Ideally we’d set up a staging environment so that we could experiment with caching extensively on our local machine . We’ll also set the cache_store to dalli_store. If we were putting this app into production we’d need do the same in our production environment.
 
 
 /config/development.rb
 
-
-
-
+```
 # Show full error reports and disable caching
 config.consider_all_requests_local       = true
 config.action_controller.perform_caching = true
 config.cache_store = :dalli_store
 
-
+```
 
 Using Dalli
 
@@ -38,7 +42,7 @@ We can try this out in the console now. If we access Rails.cache we’ll see tha
 Rails console
 
 
-
+```
 >> Rails.cache
 => #<ActiveSupport::Cache::DalliStore:0x007fb05be840c8 @options={:compress=>nil}, @raise_errors=false, @data=#<Dalli::Client:0x007fb05be83f88 @servers="127.0.0.1:11211", @options={:compress=>nil}, @ring=nil>>
 
@@ -47,6 +51,7 @@ Rails console
 >> Rails.cache.read(:foo)
 => 1
 
+```
 Instead of using read and write we can call fetch. This will attempt to read a value and if that fails, execute a block and set the cache to the result. If we run Rails.cache.fetch(:bar) { sleep 1; 2 } it will take a second to run as that value doesn’t exist in the cache and so the code in the block will be run. If we run it again it will return the stored value instantly.
 
 There’s another useful method called read_multi. This will attempt to access all the values for each of the keys passed in and return a hash.
